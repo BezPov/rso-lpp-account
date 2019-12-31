@@ -1,6 +1,9 @@
 language: generic
 sudo: required
 services: docker
+branches:
+  only:
+    - master
 env:
   global:
   - PROJECT_NAME=lpp-account
