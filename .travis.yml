@@ -11,12 +11,14 @@ env:
   - DOCKER_USERNAME=bezpov
   - secure: EX/0cLRBnBvBJxNy97PLAIuhPJmzXNvx1dBXAAqulWowehpCWEoJx7Wsyr2DYggLaCr8g1ILVy/djzAMyPuy4IjpIMVT7G3Cu+BlLV8lw9qMbGriJYVu6nv7/mwgII/S15JEDWoHr7+Ts+cxRbA5N9n0jfhUKjsbL2XdIRur/32yJYcK6Xcxpi5l3oBo7PdLIE7l97dbDkl3C7u+Ql/tNQLRAZqge/sXXK8oeLkX+4MVRR3qTpcUQ7cWzDsg1x9z3bHO7qUmPK01Quk5S6JO3PkQJQiY98KVSz3jU3ii4JYrCsM/EEUoSLgFUd6Xj4mbvFErGFmxUy4EEq6eRLXFh7JfFc7TwIEOovEF49SloZX+7My1fBCDOrgizE31dHPOvZEDlvHBhyLif6vtW5i3WLvc1TAMqI9xanvd07ZBvyU7nxv9TIgtkHFZ2yOwrZWlCoKnGOXRW630Hh8h4/O4UU8Hz5wI+EnDbrzikTlcP58n3w0i4SDHms6muSlIuUGBaOlPELPidzMQse4EyAV9sBP8XQF8cn/aW48C2tfEIczylA4km4TYnbxDUoxaVQEIyl2I/IamMfi5YS5Ps4djhfzEIF2RNh2PWEHkBf4dPwWsZgSJC71nw7kZvKgHS6P177CKfbQOG2XkRFWw4DdyKlohgDyDgrKm0gnpyo/dP/U=
 before_install:
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- docker image build -t $PROJECT_NAME:$PROJECT_VERSION .
-- docker image tag $PROJECT_NAME:$PROJECT_VERSION $DOCKER_USERNAME/$PROJECT_NAME:$PROJECT_VERSION
-- docker image push $DOCKER_USERNAME/$PROJECT_NAME
+# - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+# - docker image build -t $PROJECT_NAME:$PROJECT_VERSION .
+# - docker image tag $PROJECT_NAME:$PROJECT_VERSION $DOCKER_USERNAME/$PROJECT_NAME:$PROJECT_VERSION
+# - docker image push $DOCKER_USERNAME/$PROJECT_NAME
 - gcloud version || true
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 # Add gcloud to $PATH
 - source /home/travis/google-cloud-sdk/path.bash.inc
 - gcloud version
+- gcloud container clusters get-credentials lpp --zone us-central1-a --project massive-boulder-263710
+- kubectl apply -f ./kubernetes/deployment.yaml
