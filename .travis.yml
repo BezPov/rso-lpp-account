@@ -23,4 +23,5 @@ before_install:
 - gcloud auth activate-service-account --key-file ./kubernetes/service-account.json
 - gcloud config set project massive-boulder-263710
 - gcloud container clusters get-credentials lpp --zone us-central1-a --project massive-boulder-263710
+- gcloud components install kubectl
 - kubectl apply -f ./kubernetes/deployment.yaml
