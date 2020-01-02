@@ -13,16 +13,16 @@ spec:
         app: lpp-account
     spec:
       containers:
-        - name: lpp-account-container
-          image: bezpov/lpp-account:1.0.0
+        - image: bezpov/lpp-account:1.0.0
+          name: lpp-account-container
           ports:
             - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: server
-          initialDelaySeconds: 20
-          periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: server
+            initialDelaySeconds: 20
+            periodSeconds: 3
           readinessProbe:
             httpGet:
               path: /health/ready
