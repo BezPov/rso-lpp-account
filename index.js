@@ -18,6 +18,8 @@ server.get('/', (req, res, next) => {
     return next();
 });
 
+require('./routes/healthRoutes')(server);
+
 server.listen(8080, () => {
     console.log(`${server.name} listening at ${server.url}`);
 });

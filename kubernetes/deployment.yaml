@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lpp-account
+spec:
+  selector:
+    matchLabels:
+      app: lpp-account
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: lpp-account
+    spec:
+      containers:
+        - name: lpp-account-container
+          image: bezpov/lpp-account:1.0.0
+          ports:
+            - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server
+          initialDelaySeconds: 20
+          periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: server
+            initialDelaySeconds: 20
+            periodSeconds: 3
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lpp-account-service
+  namespace: default
+  labels:
+    app: lpp-account
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+  selector:
+    app: lpp-account
+  type: NodePort
