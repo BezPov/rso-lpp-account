@@ -25,3 +25,4 @@ before_install:
   - gcloud container clusters get-credentials lpp --zone us-central1-a --project massive-boulder-263710
   - gcloud components install kubectl
   - kubectl apply -f ./kubernetes/deployment.yaml
+  - kubectl apply -f ./kubernetes/ingress.yaml

@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: lpp-ingress
@@ -6,11 +6,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /parser(/|$)(.*)
+          - path: /account(/|$)(.*)
             backend:
-              serviceName: lpp-parser-service
+              serviceName: lpp-account-service
               servicePort: 80
-          - path: /route-finder(/|$)(.*)
-            backend:
-              serviceName: lpp-route-finder-service
-              servicePort: 81
