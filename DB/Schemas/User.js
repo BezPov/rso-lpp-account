@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-	id: String,
 	name: {
 		type: String,
 		required: true
@@ -20,7 +19,8 @@ const UserSchema = new mongoose.Schema({
 	},
 	cardId: {
 		// user's urbana card id
-		type: String
+		type: String,
+		unique: true
 	},
 	password: {
 		type: String,
