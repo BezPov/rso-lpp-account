@@ -1,5 +1,6 @@
 'use strict'
 
+const bcrypt = require('bcryptjs');
 const User = require('../DB/Schemas/User');
 
 module.exports = function(server) {
@@ -31,14 +32,20 @@ module.exports = function(server) {
 			// TODO: for now mongoose schema takes care of email duplications - maybe check can be done at this level where message will be sent to the user
 			// TODO: password should be encrypted
 
-			User.create(data)
-				.then(usr => {
-					res.send(200, usr);
-					next();
-				})
-				.catch(err => {
-					res.send(500, err);
+			bcrypt.genSalt(10, (err, salt) => {
+				bcrypt.hash(data.password, salt, (err, hash) => {
+					// Hash password
+					data.password = hash;
+					User.create(data)
+						.then(usr => {
+							res.send(200, usr);
+							next();
+						})
+						.catch(err => {
+							res.send(500, err);
+						});
 				});
+			});
 		}
 	});
 
