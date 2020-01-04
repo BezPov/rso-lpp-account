@@ -9,9 +9,34 @@ module.exports = function(server) {
 	 * Login
 	 */
 	server.post('/user/login', (req, res, next) => {
-		// TODO: integrate secure method for login (e.g. passport)
-		res.send(200, {'message': 'Login response'});
-		next();
+
+		if (!req.body.email || !req.body.password) {
+			res.send(500, {'message': 'Unable to authenticate user! Required parameters are missing.'});
+		} else {
+			// get user by email
+			User.findOne({email: req.body.email})
+				.then(user => {
+					if (!user) {
+						res.send(404, {'message': 'Login failed. User with provided credentials has not been found.'});
+					}
+
+					// Match password
+					bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+						if (err) {
+							res.send(500, err);
+						}
+						else if (isMatch) {
+							res.send(200, user);
+							next();
+						} else {
+							res.send(404, {'message': 'Login failed. User with provided credentials has not been found.'});
+						}
+					});
+				})
+				.catch(err => {
+					res.send(500, err);
+				});
+		}
 	});
 
 
@@ -30,7 +55,6 @@ module.exports = function(server) {
 			data.lastUpdatedAt = new Date();
 
 			// TODO: for now mongoose schema takes care of email duplications - maybe check can be done at this level where message will be sent to the user
-			// TODO: password should be encrypted
 
 			bcrypt.genSalt(10, (err, salt) => {
 				bcrypt.hash(data.password, salt, (err, hash) => {
