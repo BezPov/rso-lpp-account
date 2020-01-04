@@ -157,8 +157,18 @@ module.exports = function (server) {
 
 		User.findOneAndRemove({_id: req.params.userId})
 			.then(() => {
-				res.send(200, {'message': `User with _id ${req.params.userId} has been deleted.`});
-				next();
+				// user's account has been deleted successfully, delete his credit account too
+				// call payment api
+				// TODO: url to global config
+				axios.delete(`http://localhost:8082/creditAccount/${req.params.userId}`)
+					.then((response) => {
+						res.send(200, {'message': `User with _id ${req.params.userId} has been deleted.`});
+						next();
+					})
+					.catch(error => {
+						console.log(error);
+						res.send(500, error);
+					});
 			})
 			.catch(err => {
 				res.send(500, err);
