@@ -1,12 +1,26 @@
-apiVersion: extensions/v1beta1
-kind: Ingress
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
 metadata:
   name: lpp-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
     - http:
         paths:
-          - path: /account(/|$)(.*)
+          - path: /api/account(/|$)(.*)
             backend:
-              serviceName: lpp-account-service
+              serviceName: "lpp-account-service"
               servicePort: 80
+          - path: /api(/|$)(.*)
+            backend:
+              serviceName: "lpp-api-gateway-service"
+              servicePort: 81
+          - path: /app(/|$)(.*)
+            backend:
+              serviceName: "lpp-frontend-service"
+              servicePort: 82
