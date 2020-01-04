@@ -1,9 +1,11 @@
 'use strict'
 
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
+
 const User = require('../DB/Schemas/User');
 
-module.exports = function(server) {
+module.exports = function (server) {
 
 	/**
 	 * SignUp
@@ -19,7 +21,7 @@ module.exports = function(server) {
 			data.createdAt = new Date();
 			data.lastUpdatedAt = new Date();
 
-			// TODO: for now mongoose schema takes care of email duplications - maybe check can be done at this level where message will be sent to the user
+			// TODO: for now mongoose schema takes care of email and cardId duplications - maybe check can be done at this level where message will be sent to the user
 
 			bcrypt.genSalt(10, (err, salt) => {
 				bcrypt.hash(data.password, salt, (err, hash) => {
@@ -27,8 +29,22 @@ module.exports = function(server) {
 					data.password = hash;
 					User.create(data)
 						.then(usr => {
-							res.send(200, usr);
-							next();
+
+							// new user has been created successfully, now create him credit account for payment
+							// call payment api
+							// TODO: url to global config
+							axios.post('http://localhost:8082/creditAccount/create', {
+								user: usr._id,
+								cardId: usr.cardId
+							})
+							.then(response => {
+								res.send(200, usr);
+								next();
+							})
+							.catch(error => {
+								console.log(error);
+								res.send(500, error);
+							});
 						})
 						.catch(err => {
 							res.send(500, err);
@@ -57,8 +73,7 @@ module.exports = function(server) {
 					bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
 						if (err) {
 							res.send(500, err);
-						}
-						else if (isMatch) {
+						} else if (isMatch) {
 							res.send(200, user);
 							next();
 						} else {
@@ -80,7 +95,7 @@ module.exports = function(server) {
 			res.send(500, {'message': 'Required parameter cardId is missing.'});
 		}
 
-		User.findOne({ cardId: req.body.cardId })
+		User.findOne({cardId: req.body.cardId})
 			.then(user => {
 				if (!user) res.send(404, {'message': `User with provided cardId ${req.body.cardId} was not found.`});
 				else res.send(200, user);
@@ -122,7 +137,7 @@ module.exports = function(server) {
 
 		let data = req.body || {};
 
-		User.update({ _id: req.params.userId}, data)
+		User.update({_id: req.params.userId}, data)
 			.then(user => {
 				res.send(200, user);
 				next();
@@ -141,9 +156,9 @@ module.exports = function(server) {
 			res.send(500, {'message': 'Required parameter userId is missing.'});
 		}
 
-		User.findOneAndRemove({ _id: req.params.userId })
+		User.findOneAndRemove({_id: req.params.userId})
 			.then(() => {
-				res.send(200, { 'message': `User with _id ${req.params.userId} has been deleted.`});
+				res.send(200, {'message': `User with _id ${req.params.userId} has been deleted.`});
 				next();
 			})
 			.catch(err => {
