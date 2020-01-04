@@ -13,7 +13,7 @@ spec:
         app: lpp-account
     spec:
       containers:
-        - image: bezpov/lpp-account:1.0.1
+        - image: bezpov/lpp-account:1.0.2
           name: lpp-account-container
           ports:
             - containerPort: 8080
