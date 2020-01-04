@@ -11,6 +11,7 @@ let cors = corsMiddleware({
 
 // TODO: configuration should be moved to separate file
 const dbUri = 'mongodb+srv://bezoPovi:bezpov123!@lppcluster-hjwow.azure.mongodb.net/test?retryWrites=true&w=majority';
+
 const connectionOptions = {
     promiseLibrary: global.Promise,
     server: {

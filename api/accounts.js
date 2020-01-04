@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const bcrypt = require('bcryptjs');
 const User = require('../DB/Schemas/User');
@@ -42,7 +42,6 @@ module.exports = function(server) {
 	 * Login
 	 */
 	server.post('/user/login', (req, res, next) => {
-
 		if (!req.body.email || !req.body.password) {
 			res.send(500, {'message': 'Unable to authenticate user! Required parameters are missing.'});
 		} else {
