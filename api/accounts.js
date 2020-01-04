@@ -33,7 +33,7 @@ module.exports = function (server) {
 							// new user has been created successfully, now create him credit account for payment
 							// call payment api
 							// TODO: url to global config
-							axios.post('http://35.225.182.234/api/payment/creditAccount/create', {
+							axios.post('http://lpp-payment-service:85/creditAccount/create', {
 								user: usr._id,
 								cardId: usr.cardId
 							})
@@ -160,7 +160,7 @@ module.exports = function (server) {
 				// user's account has been deleted successfully, delete his credit account too
 				// call payment api
 				// TODO: url to global config
-				axios.delete(`http://35.225.182.234/api/payment/creditAccount/${req.params.userId}`)
+				axios.delete(`http://lpp-payment-service:85/creditAccount/${req.params.userId}`)
 					.then((response) => {
 						res.send(200, {'message': `User with _id ${req.params.userId} has been deleted.`});
 						next();
