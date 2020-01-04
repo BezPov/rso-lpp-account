@@ -6,6 +6,39 @@ const User = require('../DB/Schemas/User');
 module.exports = function(server) {
 
 	/**
+	 * SignUp
+	 */
+	server.post('/user/create', (req, res, next) => {
+		const data = req.body || {};
+
+		// validate data
+		if (!data.name || !data.surname || !data.email || !data.password) {
+			//missing data
+			res.send(500, {'message': 'Unable to create new user! Data is incomplete.'});
+		} else {
+			data.createdAt = new Date();
+			data.lastUpdatedAt = new Date();
+
+			// TODO: for now mongoose schema takes care of email duplications - maybe check can be done at this level where message will be sent to the user
+
+			bcrypt.genSalt(10, (err, salt) => {
+				bcrypt.hash(data.password, salt, (err, hash) => {
+					// Hash password
+					data.password = hash;
+					User.create(data)
+						.then(usr => {
+							res.send(200, usr);
+							next();
+						})
+						.catch(err => {
+							res.send(500, err);
+						});
+				});
+			});
+		}
+	});
+
+	/**
 	 * Login
 	 */
 	server.post('/user/login', (req, res, next) => {
@@ -39,38 +72,23 @@ module.exports = function(server) {
 		}
 	});
 
-
 	/**
-	 * SignUp
+	 * Login with Urbana card
 	 */
-	server.post('/user/create', (req, res, next) => {
-		const data = req.body || {};
-
-		// validate data
-		if (!data.name || !data.surname || !data.email || !data.password) {
-			//missing data
-			res.send(500, {'message': 'Unable to create new user! Data is incomplete.'});
-		} else {
-			data.createdAt = new Date();
-			data.lastUpdatedAt = new Date();
-
-			// TODO: for now mongoose schema takes care of email duplications - maybe check can be done at this level where message will be sent to the user
-
-			bcrypt.genSalt(10, (err, salt) => {
-				bcrypt.hash(data.password, salt, (err, hash) => {
-					// Hash password
-					data.password = hash;
-					User.create(data)
-						.then(usr => {
-							res.send(200, usr);
-							next();
-						})
-						.catch(err => {
-							res.send(500, err);
-						});
-				});
-			});
+	server.post('/user/cardLogin', (req, res, next) => {
+		if (!req.body.cardId) {
+			res.send(500, {'message': 'Required parameter cardId is missing.'});
 		}
+
+		User.findOne({ cardId: req.body.cardId })
+			.then(user => {
+				if (!user) res.send(404, {'message': `User with provided cardId ${req.body.cardId} was not found.`});
+				else res.send(200, user);
+				next();
+			})
+			.catch(err => {
+				res.send(500, err);
+			});
 	});
 
 	/**
