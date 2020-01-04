@@ -24,10 +24,12 @@ const connectionOptions = {
     }
 };
 
-const server = restify.createServer({
+const options = {
     name: 'lpp-account',
-    version: '1.0.0'
-});
+    version: process.env.npm_package_version
+};
+
+const server = restify.createServer(options);
 
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
@@ -38,13 +40,14 @@ server.use(cors.actual);
 server.get('/', (req, res, next) => {
     res.json({
         name: 'lpp-account',
-        version: '1.0.0',
+        version: process.env.npm_package_version,
         description: 'Handles the account'
     });
 
     return next();
 });
 
+require('./routes/metricsRoutes')(server);
 require('./routes/healthRoutes')(server);
 
 server.listen(8080, () => {
