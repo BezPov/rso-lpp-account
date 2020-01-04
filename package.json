@@ -14,6 +14,7 @@
     "mongodb": "^3.4.1",
     "mongoose": "^5.8.4",
     "nodemon": "^1.19.4",
-    "restify": "^8.4.0"
+    "restify": "^8.4.0",
+    "restify-cors-middleware": "^1.1.1"
   }
 }
