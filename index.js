@@ -50,7 +50,6 @@ require('./routes/healthRoutes')(server);
 server.listen(8080, () => {
     console.log(`${server.name} listening at ${server.url}`);
 
-
     // establish connection to mongodb atlas
     mongoose.Promise = connectionOptions.promiseLibrary;
     mongoose.connect(dbUri, connectionOptions);
