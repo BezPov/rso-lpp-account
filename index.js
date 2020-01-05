@@ -1,5 +1,7 @@
 const restify = require('restify');
-const mongoose = require('mongoose');
+
+const logger = require('./services/logging');
+
 const corsMiddleware = require('restify-cors-middleware');
 
 let cors = corsMiddleware({
@@ -8,21 +10,6 @@ let cors = corsMiddleware({
     allowHeaders:['X-App-Version'],
     exposeHeaders:[]
 });
-
-// TODO: configuration should be moved to separate file
-const dbUri = 'mongodb+srv://bezoPovi:bezpov123!@lppcluster-hjwow.azure.mongodb.net/test?retryWrites=true&w=majority';
-
-const connectionOptions = {
-    promiseLibrary: global.Promise,
-    server: {
-        auto_reconnect: true,
-        reconnectTries: Number.MAX_VALUE,
-        reconnectInterval: 1000
-    },
-    config: {
-        autoIndex: true
-    }
-};
 
 const options = {
     name: 'lpp-account',
@@ -50,25 +37,20 @@ server.get('/', (req, res, next) => {
 require('./routes/metricsRoutes')(server);
 require('./routes/healthRoutes')(server);
 
+require('./api/accounts')(server);
+
 server.listen(8080, () => {
     console.log(`${server.name} listening at ${server.url}`);
 
-    // establish connection to mongodb atlas
-    mongoose.Promise = connectionOptions.promiseLibrary;
-    mongoose.connect(dbUri, connectionOptions);
+    logger.info(`${options.name} ${options.version} listening at ${server.url}`);
 
-    const db = mongoose.connection;
+    const onDatabaseConnected = function() {
+        logger.info(`[${process.env.npm_package_name}] Database connected`);
+    };
 
-    db.on('error', (err) => {
-        if (err.message.code === 'ETIMEDOUT') {
-            console.log(err);
-            mongoose.connect(dbUri, connectionOptions);
-        }
-    });
+    const onDatabaseError = function() {
+        logger.info(`[${process.env.npm_package_name}] An error occurred while connecting to database.`);
+    };
 
-
-    db.once('open', () => {
-        console.log("Connection to mongodb established successfully");
-        require('./api/accounts')(server);
-    });
+    require('./services/database')(onDatabaseConnected, onDatabaseError);
 });

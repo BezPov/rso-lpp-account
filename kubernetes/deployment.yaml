@@ -13,8 +13,11 @@ spec:
         app: lpp-account
     spec:
       containers:
-        - image: bezpov/lpp-account:1.0.8
+        - image: bezpov/lpp-account:1.0.9
           name: lpp-account-container
+          env:
+            - name: ETCD_SERVER
+              value: "http://etcd-client:2379"
           ports:
             - containerPort: 8080
           livenessProbe:
