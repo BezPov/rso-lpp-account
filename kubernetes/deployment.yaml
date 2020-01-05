@@ -13,7 +13,7 @@ spec:
         app: lpp-account
     spec:
       containers:
-        - image: bezpov/lpp-account:1.1.0
+        - image: bezpov/lpp-account:1.1.1
           name: lpp-account-container
           env:
             - name: ETCD_SERVER
