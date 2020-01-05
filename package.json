@@ -1,6 +1,6 @@
 {
   "name": "lpp-account",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,11 @@
     "bcryptjs": "^2.4.3",
     "mongodb": "^3.4.1",
     "mongoose": "^5.8.4",
+    "node-etcd": "^7.0.0",
     "nodemon": "^1.19.4",
     "restify": "^8.4.0",
-    "restify-cors-middleware": "^1.1.1"
+    "restify-cors-middleware": "^1.1.1",
+    "winston": "^3.2.1",
+    "winston-logstash": "^0.4.0"
   }
 }
